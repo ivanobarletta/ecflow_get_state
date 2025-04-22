@@ -88,14 +88,21 @@ parse_string() {
 }
 
 
+
 temporaryFile=`mktemp ./suiteTemp_XXXXX`
 #echo "creating: ${temporaryFile}"
 touch ${temporaryFile}
 
-ecflow_client --port=${ECF_PORT} --host=${ECF_HOST} --get_state=${suiteName} > ${temporaryFile}
+if [[ $# -eq 0 ]]; then # suite name not specified, consider the only one loaded 
+    ecflow_client --port=${ECF_PORT} --host=${ECF_HOST} --get_state > ${temporaryFile}
+else
+    ecflow_client --port=${ECF_PORT} --host=${ECF_HOST} --get_state=${suiteName} > ${temporaryFile}
+fi 
+
 if [[ "$?" -ne "0" ]]; then 
     echo "Error with fetching the status of suite: ${suiteName}"
-    echo "Check if the suite name is correct"
+    echo "Check if the suite name is correct or that you have any suite "
+    echo "loaded"
     exit 1 
 fi
 
